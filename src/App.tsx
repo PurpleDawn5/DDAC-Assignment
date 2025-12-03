@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ConfigProvider } from 'antd'; // Import this
+import { ConfigProvider } from 'antd';
 import AppLayout from './components/AppLayout';
 import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
+import Partners from './pages/Partners';
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
             <Route path="properties" element={<Properties />} />
             <Route path="viewings" element={<div>Schedule Viewing Page</div>} />
             <Route path="clients" element={<div>Guest & Clients List</div>} />
-            <Route path="partners" element={<div>Partners Management</div>} />
+            <Route path="partners" element={<Partners />} />
           </Route>
         </Routes>
       </BrowserRouter>
