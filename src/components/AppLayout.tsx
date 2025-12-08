@@ -3,9 +3,9 @@ import { Layout, Menu, theme } from 'antd';
 import { 
   PieChartOutlined, 
   HomeOutlined, 
-  UsergroupAddOutlined,
   CalendarOutlined,
-  TeamOutlined
+  TeamOutlined,
+  IdcardOutlined
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ const items = [
   { key: '/', icon: <PieChartOutlined />, label: 'Dashboard' },
   { key: '/properties', icon: <HomeOutlined />, label: 'Properties' },
   { key: '/viewings', icon: <CalendarOutlined />, label: 'Viewings' },
-  { key: '/clients', icon: <UsergroupAddOutlined />, label: 'Clients' }, 
+  { key: '/owners', icon: <IdcardOutlined />, label: 'Owners' }, 
   { key: '/partners', icon: <TeamOutlined />, label: 'Partners' },
 ];
 

@@ -4,6 +4,7 @@ import AppLayout from './components/AppLayout';
 import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
 import Partners from './pages/Partners';
+import Owners from './pages/Owners';
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="properties" element={<Properties />} />
             <Route path="viewings" element={<div>Schedule Viewing Page</div>} />
-            <Route path="clients" element={<div>Guest & Clients List</div>} />
+            <Route path="owners" element={<Owners />} />
             <Route path="partners" element={<Partners />} />
           </Route>
         </Routes>
