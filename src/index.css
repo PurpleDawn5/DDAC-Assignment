@@ -1,16 +1,60 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* --- LIGHT MODE VARIABLES --- */
+  --bg-color: #f5f7fa;        /* Light Grey Background */
+  --component-bg: #ffffff;    /* White Cards/Sidebar */
+  --text-primary: #000000;    /* Black Text */
+  --text-secondary: #666666;  /* Grey Subtext */
+  --border-color: #f0f0f0;    /* Light Borders */
+  --primary-color: #0f766e;   /* Teal Brand Color */
+}
 
-  /* Force light mode colors */
-  color-scheme: light;
-  color: #000000;
-  background-color: #ffffff;
+/* --- DARK MODE VARIABLES --- */
+body.dark-mode {
+  --bg-color: #141414;        /* The specific Dark Grey from Settings */
+  --component-bg: #1f1f1f;    /* Slightly lighter for cards/sidebar */
+  --text-primary: #ffffff;    /* White Text */
+  --text-secondary: #a6a6a6;  /* Light Grey Subtext */
+  --border-color: #303030;    /* Dark Borders */
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  
+  /* Apply the variables globally */
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- GLOBAL OVERRIDES --- */
+/* This forces the Sidebar, Header, and Cards to all match the same dark theme */
+.ant-layout,
+.ant-layout-sider, 
+.ant-layout-header, 
+.ant-card,
+.card {
+  background: var(--component-bg) !important;
+  background-color: var(--component-bg) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+  transition: background-color 0.3s ease;
+}
+
+/* Fix text colors inside Ant Design components */
+.ant-menu,
+.ant-menu-item,
+.ant-typography,
+h1, h2, h3, h4, h5, p, span,
+.ant-statistic-content-value {
+  color: var(--text-primary) !important;
+  background: transparent !important;
+}
+
+/* Fix Sidebar Menu background in Dark Mode */
+.ant-menu {
+  background: transparent !important;
 }

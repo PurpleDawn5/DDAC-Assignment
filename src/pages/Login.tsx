@@ -30,7 +30,6 @@ const Login = () => {
           
           <div className="flip-card__inner" onClick={(e) => e.stopPropagation()}>
             
-            {/* FRONT SIDE: LOGIN */}
             <div className="flip-card__front">
               <div className="title">Log in</div>
               <form className="flip-card__form" onSubmit={handleLogin}>
@@ -40,7 +39,6 @@ const Login = () => {
               </form>
             </div>
 
-            {/* BACK SIDE: SIGN UP */}
             <div className="flip-card__back">
               <div className="title">Sign up</div>
               <form className="flip-card__form" onSubmit={handleSignup}>

@@ -59,51 +59,26 @@ const Owners: React.FC = () => {
   const [owners, setOwners] = useState<Owner[]>(initialOwners);
   const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingOwner, setEditingOwner] = useState<Owner | null>(null);
   const [form] = Form.useForm();
 
-  const handleSave = (values: CreateOwnerFormValues) => {
-    if (editingOwner) {
-      // CASE 1: EDIT MODE
-      setOwners(
-        owners.map((owner) =>
-          owner.id === editingOwner.id
-            ? { ...owner, ...values }
-            : owner
-        )
-      );
-      message.success("Owner details updated!");
-    } else {
-      // CASE 2: ADD MODE
-      const newOwner: Owner = {
-        id: Math.random().toString(),
-        ...values,
-        createdAt: new Date().toISOString(),
-      };
-      setOwners([...owners, newOwner]);
-      message.success("New owner registered!");
-    }
+  // 1. ADD OWNER (Simulates calling OwnerService.CreateOwner)
+  const handleAddOwner = (values: CreateOwnerFormValues) => {
+    const newOwner: Owner = {
+      id: Math.random().toString(), // Fake ID
+      ...values,
+      createdAt: new Date().toISOString(),
+    };
 
+    setOwners([...owners, newOwner]);
+    message.success("Owner added successfully!");
     setIsModalOpen(false);
     form.resetFields();
-    setEditingOwner(null); // Reset mode
   };
 
+  // 2. DELETE OWNER (Simulates calling OwnerService.DeleteOwner)
   const handleDelete = (id: string) => {
     setOwners(owners.filter((o) => o.id !== id));
     message.success("Owner deleted.");
-  };
-
-  const handleEditClick = (record: Owner) => {
-    setEditingOwner(record); // Remember who we are editing
-    form.setFieldsValue(record); // Pre-fill the form with their data
-    setIsModalOpen(true);
-  };
-
-  const handleAddClick = () => {
-    setEditingOwner(null); // We are NOT editing anyone
-    form.resetFields(); // Clear the form
-    setIsModalOpen(true);
   };
 
   // 3. FILTER LOGIC
@@ -168,11 +143,7 @@ const Owners: React.FC = () => {
       key: "action",
       render: (_, record) => (
         <Space>
-          <Button
-            icon={<EditOutlined />}
-            size="small"
-            onClick={() => handleEditClick(record)}
-          >
+          <Button icon={<EditOutlined />} size="small">
             Edit
           </Button>
           <Popconfirm
@@ -209,7 +180,7 @@ const Owners: React.FC = () => {
         <Button
           type="primary"
           icon={<UserAddOutlined />}
-          onClick={handleAddClick}
+          onClick={() => setIsModalOpen(true)}
         >
           Add Owner
         </Button>
@@ -227,15 +198,15 @@ const Owners: React.FC = () => {
       {/* --- TABLE --- */}
       <Table columns={columns} dataSource={filteredData} rowKey="id" />
 
-      {/* --- ADD/EDIT OWNER MODAL --- */}
+      {/* --- ADD OWNER MODAL --- */}
       <Modal
-        title={editingOwner ? "Edit Owner Details" : "Register New Owner"} // <--- Dynamic Title
+        title="Register New Owner"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        onOk={() => form.submit()}
-        okText={editingOwner ? "Save Changes" : "Register"} // <--- Dynamic Button Text
+        onOk={() => form.submit()} // Submits the form below
+        okText="Register"
       >
-        <Form form={form} layout="vertical" onFinish={handleSave}>
+        <Form form={form} layout="vertical" onFinish={handleAddOwner}>
           <div style={{ display: "flex", gap: 16 }}>
             <Form.Item
               name="firstName"
