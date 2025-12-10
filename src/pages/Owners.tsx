@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   Button,
@@ -18,91 +18,75 @@ import {
   EditOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-
-interface Owner {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  createdAt: string;
-}
-
-interface CreateOwnerFormValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-}
-
-// DUMMY DATA
-const initialOwners: Owner[] = [
-  {
-    id: "1",
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@gmail.com",
-    phoneNumber: "012-3456789",
-    createdAt: "2025-01-10T10:00:00Z",
-  },
-  {
-    id: "2",
-    firstName: "Jane",
-    lastName: "Smith",
-    email: "jane.smith@yahoo.com",
-    phoneNumber: "019-8765432",
-    createdAt: "2025-02-15T14:30:00Z",
-  },
-];
+import { OwnerAPI, type OwnerDto, type CreateOwnerDto } from "../api/ownerService";
 
 const Owners: React.FC = () => {
-  const [owners, setOwners] = useState<Owner[]>(initialOwners);
+  const [owners, setOwners] = useState<OwnerDto[]>([]);
+  const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingOwner, setEditingOwner] = useState<Owner | null>(null);
+  const [editingOwner, setEditingOwner] = useState<OwnerDto | null>(null);
   const [form] = Form.useForm();
 
-  const handleSave = (values: CreateOwnerFormValues) => {
-    if (editingOwner) {
-      // CASE 1: EDIT MODE
-      setOwners(
-        owners.map((owner) =>
-          owner.id === editingOwner.id
-            ? { ...owner, ...values }
-            : owner
-        )
-      );
-      message.success("Owner details updated!");
-    } else {
-      // CASE 2: ADD MODE
-      const newOwner: Owner = {
-        id: Math.random().toString(),
-        ...values,
-        createdAt: new Date().toISOString(),
-      };
-      setOwners([...owners, newOwner]);
-      message.success("New owner registered!");
+  const fetchOwners = async () => {
+    setLoading(true);
+    try {
+      const data = await OwnerAPI.getAll();
+      setOwners(data);
+    } catch (error) {
+      message.error("Failed to load owners.");
+    } finally {
+      setLoading(false);
     }
-
-    setIsModalOpen(false);
-    form.resetFields();
-    setEditingOwner(null); // Reset mode
   };
 
-  const handleDelete = (id: string) => {
-    setOwners(owners.filter((o) => o.id !== id));
-    message.success("Owner deleted.");
+  useEffect(() => {
+    fetchOwners();
+  }, []);
+
+  const handleSave = async (values: CreateOwnerDto) => {
+    try {
+      if (editingOwner) {
+        // Update API Call
+        await OwnerAPI.update(editingOwner.id, values);
+        message.success("Owner updated!");
+      } else {
+        // Create API Call
+        await OwnerAPI.create(values);
+        message.success("Owner created!");
+      }
+
+      // Cleanup
+      setIsModalOpen(false);
+      form.resetFields();
+      setEditingOwner(null);
+
+      // REFRESH the table to show real data from DB
+      fetchOwners();
+    } catch (error) {
+      message.error("Operation failed");
+    }
   };
 
-  const handleEditClick = (record: Owner) => {
-    setEditingOwner(record); // Remember who we are editing
-    form.setFieldsValue(record); // Pre-fill the form with their data
+  const handleDelete = async (id: string) => {
+    try {
+      await OwnerAPI.delete(id);
+      message.success("Owner deleted");
+      fetchOwners(); // Refresh list
+    } catch (error) {
+      message.error("Failed to delete owner");
+    }
+  };
+
+  const handleEditClick = (record: OwnerDto) => {
+    setEditingOwner(record);
+    form.setFieldsValue(record);
     setIsModalOpen(true);
   };
 
   const handleAddClick = () => {
-    setEditingOwner(null); // We are NOT editing anyone
-    form.resetFields(); // Clear the form
+    setEditingOwner(null);
+    form.resetFields();
     setIsModalOpen(true);
   };
 
@@ -114,7 +98,7 @@ const Owners: React.FC = () => {
   });
 
   // --- COLUMNS ---
-  const columns: ColumnsType<Owner> = [
+  const columns: ColumnsType<OwnerDto> = [
     {
       title: "Name",
       key: "name",
@@ -225,7 +209,12 @@ const Owners: React.FC = () => {
       />
 
       {/* --- TABLE --- */}
-      <Table columns={columns} dataSource={filteredData} rowKey="id" />
+      <Table
+        columns={columns}
+        dataSource={filteredData}
+        rowKey="id"
+        loading={loading} // <--- Added this
+      />
 
       {/* --- ADD/EDIT OWNER MODAL --- */}
       <Modal

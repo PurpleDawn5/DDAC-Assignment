@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
+import { PartnerAPI, type AgentPartnerDto } from '../api/partnerService';
 import {
   Table,
   Tag,
@@ -20,98 +21,101 @@ import {
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 
-interface AgentPartner {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  licenseNumber: string;
-  status: "Connected" | "Pending" | "Not Connected";
-}
-
-// DUMMY DATA\
-const initialPartners: AgentPartner[] = [
-  {
-    id: "1",
-    firstName: "Sarah",
-    lastName: "Jenkins",
-    licenseNumber: "REA-12345",
-    email: "sarah@example.com",
-    phoneNumber: "012-3456789",
-    status: "Connected",
-  },
-  {
-    id: "2",
-    firstName: "Jessica",
-    lastName: "Pearson",
-    licenseNumber: "REA-98765",
-    email: "jessica@example.com",
-    phoneNumber: "012-9876543",
-    status: "Connected",
-  },
-];
-
-const initialRequests: AgentPartner[] = [
-  {
-    id: "101",
-    firstName: "Mike",
-    lastName: "Ross",
-    licenseNumber: "REA-55555",
-    email: "mike@example.com",
-    phoneNumber: "011-1111111",
-    status: "Pending",
-  },
-];
-
-const availableAgents: AgentPartner[] = [
-  {
-    id: "201",
-    firstName: "Dana",
-    lastName: "Scott",
-    licenseNumber: "REA-77777",
-    email: "dana@example.com",
-    phoneNumber: "013-3333333",
-    status: "Not Connected",
-  },
-  {
-    id: "202",
-    firstName: "Robert",
-    lastName: "Zane",
-    licenseNumber: "REA-88888",
-    email: "robert@example.com",
-    phoneNumber: "014-4444444",
-    status: "Not Connected",
-  },
-];
-
 const Partners: React.FC = () => {
-  const [searchText, setSearchText] = useState("");
-  const [modalSearchText, setModalSearchText] = useState("");
-  const [partners, setPartners] = useState<AgentPartner[]>(initialPartners);
-  const [requests, setRequests] = useState<AgentPartner[]>(initialRequests);
+  // 1. Initialize empty arrays
+  const [partners, setPartners] = useState<AgentPartnerDto[]>([]);
+  const [requests, setRequests] = useState<AgentPartnerDto[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [searchText, setSearchText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalSearchText, setModalSearchText] = useState('');
+
+  const [availableAgents, setAvailableAgents] = useState<AgentPartnerDto[]>([]); 
+
+  // 2. Fetch Data Function
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [allRelationships, pending, available] = await Promise.all([
+        PartnerAPI.getMyPartners(),
+        PartnerAPI.getPendingRequests(),
+        PartnerAPI.getAvailableAgents(),
+      ]);
+
+      // DEBUG: Look at your console to see what the backend is actually sending
+      console.log("My Partners Raw:", allRelationships); 
+
+      setPartners(allRelationships); 
+
+      setRequests(pending);
+
+      const excludedIds = new Set([
+        ...allRelationships.map((a) => a.id),
+        ...pending.map((a) => a.id),
+      ]);
+
+      const cleanAvailable = available.filter((a) => !excludedIds.has(a.id));
+      setAvailableAgents(cleanAvailable);
+
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to load partners.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 3. Load on startup
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   // --- HANDLERS ---
-  const handleAccept = (agent: AgentPartner) => {
-    setRequests(requests.filter((r) => r.id !== agent.id));
-    setPartners([...partners, { ...agent, status: "Connected" }]);
-    message.success(`You are now partners with ${agent.firstName}!`);
+  // --- ACCEPT ---
+  const handleAccept = async (agent: AgentPartnerDto) => {
+    try {
+      await PartnerAPI.respondToRequest(agent.id, true);
+      message.success(`You are now partners with ${agent.firstName}!`);
+      fetchData();
+    } catch (error) {
+      message.error('Failed to accept request');
+    }
   };
 
-  const handleDecline = (id: string) => {
-    setRequests(requests.filter((r) => r.id !== id));
-    message.info("Request declined");
+  // --- DECLINE ---
+  const handleDecline = async (id: string) => {
+    try {
+      await PartnerAPI.respondToRequest(id, false);
+      message.info('Request declined');
+      fetchData();
+    } catch (error) {
+      message.error('Failed to decline');
+    }
   };
 
-  const handleRemove = (id: string) => {
-    setPartners(partners.filter((p) => p.id !== id));
-    message.warning("Partner removed from your network.");
+  // --- REMOVE ---
+  const handleRemove = async (id: string) => {
+    try {
+      await PartnerAPI.removePartner(id);
+      message.warning('Partner removed');
+      fetchData();
+    } catch (error) {
+      message.error('Failed to remove partner');
+    }
   };
 
-  const handleConnect = (name: string) => {
-    message.success(`Connection request sent to ${name}!`);
-    setIsModalOpen(false);
+  // --- SEND REQUEST ---
+  const handleConnect = async (id: string) => {
+    try {
+      await PartnerAPI.sendRequest(id);
+      message.success("Request sent!");
+      setIsModalOpen(false);
+      fetchData(); // Refresh immediately
+    } catch (error: any) {
+      const serverMessage = error.response?.data?.Message || "Could not send request.";
+      message.error(serverMessage);
+    }
   };
 
   // --- FILTERS ---
@@ -128,11 +132,14 @@ const Partners: React.FC = () => {
   const filteredAvailableAgents = availableAgents.filter((agent) => {
     const value = modalSearchText.toLowerCase();
     const fullName = `${agent.firstName} ${agent.lastName}`.toLowerCase();
-    return fullName.includes(value);
+    return (
+      fullName.includes(value) || 
+      agent.licenseNumber?.toLowerCase().includes(value)
+    );
   });
 
   // Columns
-  const columns: ColumnsType<AgentPartner> = [
+  const columns: ColumnsType<AgentPartnerDto> = [
     {
       title: "Agent",
       key: "name",
@@ -201,7 +208,9 @@ const Partners: React.FC = () => {
         <Button
           type="primary"
           icon={<UserAddOutlined />}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+     setIsModalOpen(true);
+  }}
         >
           Find New Agents
         </Button>
@@ -233,7 +242,7 @@ const Partners: React.FC = () => {
                 <Button
                   type="primary"
                   size="small"
-                  onClick={() => handleConnect(item.firstName)}
+                  onClick={() => handleConnect(item.id)}
                 >
                   Connect
                 </Button>,
