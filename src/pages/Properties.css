@@ -1,0 +1,329 @@
+/* src/pages/Properties.css */
+
+:root {
+  --bg-color: #f8f9fd;
+  --text-dark: #1a1a1a;
+  --text-gray: #888888;
+  --primary-purple: #6c5ce7;
+  --primary-purple-light: #e3dfff;
+  --card-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.page-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.page-header {
+  margin-bottom: 25px;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+}
+
+.breadcrumb {
+  color: var(--text-gray);
+  font-weight: normal;
+}
+
+.content-layout {
+  display: flex;
+  gap: 30px;
+}
+
+/* Sidebar Styles */
+.sidebar-container {
+  width: 300px;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  height: fit-content;
+  box-shadow: var(--card-shadow);
+}
+
+.filter-group {
+  margin-bottom: 30px;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: var(--text-dark);
+  background-color: var(--bg-color);
+  padding: 10px 15px;
+  border-radius: 12px;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 5px;
+}
+
+/* Custom Checkbox */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 30px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-gray);
+    user-select: none;
+}
+
+.checkbox-label input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border-radius: 6px;
+}
+
+.checkbox-label:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+.checkbox-label input:checked ~ .checkmark {
+    background-color: var(--primary-purple);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-label input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.checkbox-label .checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+
+/* Main Grid Styles */
+.listing-container {
+  flex-grow: 1;
+}
+
+.listing-header {
+    margin-bottom: 25px;
+}
+
+.listing-header h2 {
+    margin: 0 0 5px 0;
+    font-size: 1.5rem;
+}
+.listing-header p {
+    margin: 0;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+/* Property Card */
+.property-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease;
+}
+
+.property-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-image-container {
+  height: 220px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.card-icon-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.location-icon-purple {
+    color: var(--primary-purple);
+    background-color: var(--primary-purple-light);
+    padding: 4px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.card-address {
+  margin: 0 0 20px 0;
+  color: var(--text-gray);
+  font-size: 0.9rem;
+  padding-left: 28px;
+}
+
+.card-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  color: var(--text-gray);
+  font-size: 0.9rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-price {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.inquiry-button {
+  background-color: var(--primary-purple-light);
+  color: var(--primary-purple);
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.inquiry-button:hover {
+  background-color: #d4d0ff;
+}
+
+/* --- DETAILS PAGE STYLES --- */
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #eee;
+  font-size: 0.95rem;
+  color: var(--text-gray);
+  cursor: pointer;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+
+.back-button:hover {
+    color: var(--primary-purple);
+    border-color: var(--primary-purple-light);
+    background-color: var(--primary-purple-light);
+}
+
+.agent-section-card {
+  margin-top: 35px;
+  background-color: var(--bg-color);
+  padding: 25px;
+  border-radius: 16px;
+  border: 1px solid #eee;
+}
+
+.agent-section-title {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  color: var(--text-dark);
+}
+
+.agent-profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.agent-image-large {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.agent-details h4 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.agent-phone-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text-gray);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+
+.agent-phone-link:hover {
+  color: var(--primary-purple);
+}

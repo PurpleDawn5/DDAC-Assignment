@@ -3,6 +3,8 @@ import { ConfigProvider } from 'antd';
 import AppLayout from './components/AppLayout';
 import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
+import PropertyDetails from './pages/PropertiesDetails';
+import Viewings from './pages/Viewings'; // <-- Import the new page
 import Partners from './pages/Partners';
 import Owners from './pages/Owners';
 
@@ -17,13 +19,13 @@ function App() {
         },
         components: {
           Layout: {
-             bodyBg: '#f5f7fa', // A very light blue-grey background (not harsh white)
+             bodyBg: '#f5f7fa', 
              headerBg: '#ffffff',
-             siderBg: '#ffffff', // Make sidebar white instead of dark
+             siderBg: '#ffffff', 
           },
           Menu: {
-            itemSelectedBg: '#e6fffa', // Light teal background for selected item
-            itemSelectedColor: '#0f766e', // Teal text for selected item
+            itemSelectedBg: '#e6fffa', 
+            itemSelectedColor: '#0f766e', 
           }
         },
       }}
@@ -33,7 +35,11 @@ function App() {
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="properties" element={<Properties />} />
-            <Route path="viewings" element={<div>Schedule Viewing Page</div>} />
+            <Route path="properties/:id" element={<PropertyDetails />} />
+            
+            {/* Update this line: */}
+            <Route path="viewings" element={<Viewings />} />
+            
             <Route path="owners" element={<Owners />} />
             <Route path="partners" element={<Partners />} />
           </Route>
@@ -44,4 +50,3 @@ function App() {
 }
 
 export default App;
-
