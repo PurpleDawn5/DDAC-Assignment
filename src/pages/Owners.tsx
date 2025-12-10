@@ -34,6 +34,7 @@ const Owners: React.FC = () => {
       const data = await OwnerAPI.getAll();
       setOwners(data);
     } catch (error) {
+      console.error(error);
       message.error("Failed to load owners.");
     } finally {
       setLoading(false);
@@ -64,6 +65,7 @@ const Owners: React.FC = () => {
       // REFRESH the table to show real data from DB
       fetchOwners();
     } catch (error) {
+      console.error(error);
       message.error("Operation failed");
     }
   };
@@ -74,6 +76,7 @@ const Owners: React.FC = () => {
       message.success("Owner deleted");
       fetchOwners(); // Refresh list
     } catch (error) {
+      console.error(error);
       message.error("Failed to delete owner");
     }
   };

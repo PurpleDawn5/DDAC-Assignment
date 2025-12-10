@@ -1,17 +1,33 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ConfigProvider } from 'antd';
+import { App as AntdApp, ConfigProvider, theme } from 'antd'; 
+import React from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+
 import AppLayout from './components/AppLayout';
 import Dashboard from './pages/Dashboard';
-import Properties from './pages/Properties';
-import PropertyDetails from './pages/PropertiesDetails';
-import Viewings from './pages/Viewings'; // <-- Import the new page
-import Partners from './pages/Partners';
+import Login from './pages/Login';
 import Owners from './pages/Owners';
+import Partners from './pages/Partners';
+import Properties from './pages/Properties';
+import Settings from './pages/Settings';
 
-function App() {
+// --- NEW IMPORTS FROM FRIEND'S WORK ---
+import PropertyDetails from './pages/PropertiesDetails';
+import Viewings from './pages/Viewings'; 
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const isAuthenticated = localStorage.getItem('isAuthenticated');
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  return <>{children}</>;
+};
+
+const AppContent = () => {
+  const { isDarkMode } = useTheme();
+
   return (
     <ConfigProvider
       theme={{
+        algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
           colorPrimary: '#0f766e',
           borderRadius: 4,
@@ -19,33 +35,49 @@ function App() {
         },
         components: {
           Layout: {
-             bodyBg: '#f5f7fa', 
-             headerBg: '#ffffff',
-             siderBg: '#ffffff', 
+            bodyBg: 'var(--bg-color)',
+            headerBg: 'var(--card-bg)',
+            siderBg: 'var(--card-bg)',
           },
           Menu: {
-            itemSelectedBg: '#e6fffa', 
-            itemSelectedColor: '#0f766e', 
+            itemBg: 'var(--card-bg)',
+            itemColor: 'var(--text-primary)',
           }
-        },
+        }
       }}
     >
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<AppLayout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="properties" element={<Properties />} />
-            <Route path="properties/:id" element={<PropertyDetails />} />
+      {/* Wrap Router in AntdApp so context-aware modals (logout) work */}
+      <AntdApp>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
             
-            {/* Update this line: */}
-            <Route path="viewings" element={<Viewings />} />
-            
-            <Route path="owners" element={<Owners />} />
-            <Route path="partners" element={<Partners />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+            <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+              <Route index element={<Dashboard />} />
+              
+              {/* Properties & Details */}
+              <Route path="properties" element={<Properties />} />
+              <Route path="properties/:id" element={<PropertyDetails />} />
+              
+              {/* Viewings (Updated from placeholder to real page) */}
+              <Route path="viewings" element={<Viewings />} />
+              
+              <Route path="owners" element={<Owners />} />
+              <Route path="partners" element={<Partners />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AntdApp>
     </ConfigProvider>
+  );
+};
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

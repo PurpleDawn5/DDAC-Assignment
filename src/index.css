@@ -1,16 +1,106 @@
+/* src/index.css */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* --- LIGHT MODE VARIABLES --- */
+  --bg-color: #f5f7fa;        
+  --card-bg: #ffffff;         
+  --text-primary: #000000;    
+  --text-secondary: #666666;  
+  --border-color: #f0f0f0;    
+  --primary-color: #0f766e;   
+}
 
-  /* Force light mode colors */
-  color-scheme: light;
-  color: #000000;
-  background-color: #ffffff;
+/* --- DARK MODE VARIABLES --- */
+body.dark-mode {
+  --bg-color: #141414;        
+  --card-bg: #1f1f1f;         
+  --text-primary: #ffffff;    
+  --text-secondary: #a6a6a6;  
+  --border-color: #303030;    
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  
+  /* Apply global background and text color */
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- DARK MODE FIXES FOR COMPONENT BACKGROUNDS --- */
+
+/* 1. Force Cards & Layouts */
+.ant-card, 
+.card, 
+.stats-card,
+.property-card, 
+.prop-card,
+.dashboard-stat-card,
+.ant-list-item,
+.ant-layout-sider-children {
+  background-color: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* 2. Force Layout Containers */
+.ant-layout,
+.ant-layout-sider, 
+.ant-layout-header,
+.ant-layout-content,
+.ant-layout-footer {
+  background: var(--bg-color) !important;
+  background-color: var(--bg-color) !important;
+}
+
+/* --- 3. FIX: POPUPS, MODALS & ERROR MESSAGES --- */
+/* This ensures the error popup background turns dark */
+.ant-modal-content,
+.ant-modal-header,
+.ant-message-notice-content,
+.ant-notification-notice,
+.ant-popover-inner,
+.ant-popover-title {
+  background-color: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color); /* Adds a subtle border for definition */
+}
+
+/* Fix Title & Text inside Modals */
+.ant-modal-confirm-title, 
+.ant-modal-confirm-content,
+.ant-modal-title {
+  color: var(--text-primary) !important;
+}
+
+/* Fix the Close 'X' Button */
+.ant-modal-close, 
+.ant-modal-close-x {
+  color: var(--text-primary) !important;
+}
+
+/* --- 4. TEXT COLOR ENFORCEMENT --- */
+h1, h2, h3, h4, h5, h6, 
+p, span, div, li, 
+.ant-typography,
+.ant-statistic-title,
+.ant-statistic-content-value,
+.ant-card-meta-title,
+.ant-card-meta-description {
+  color: var(--text-primary) !important;
+}
+
+/* 5. Exceptions: Keep buttons and tags readable */
+.ant-btn-primary span {
+  color: #ffffff !important;
+}
+.ant-tag span {
+  color: inherit !important; 
+}
+.ant-menu-item-selected span {
+  color: #0f766e !important; 
 }
