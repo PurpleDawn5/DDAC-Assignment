@@ -10,8 +10,8 @@ export interface RegisterDto {
   lastName: string;
   email: string;
   password: string;
-  phoneNumber?: string;
-  licenseNumber?: string;
+  phoneNumber: string;
+  licenseNumber: string;
 }
 
 export interface AuthResponse {
